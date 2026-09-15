@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct CadenceApp: App {
@@ -13,5 +14,6 @@ struct CadenceApp: App {
         WindowGroup {
             ContentView()
         }
+        .modelContainer(for: Habir.self)
     }
 }
