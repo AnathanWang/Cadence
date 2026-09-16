@@ -14,6 +14,6 @@ struct CadenceApp: App {
         WindowGroup {
             ContentView()
         }
-        .modelContainer(for: Habir.self)
+        .modelContainer(for: Habit.self)
     }
 }

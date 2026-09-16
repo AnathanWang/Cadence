@@ -7,19 +7,22 @@
 
 import Foundation
 import SwiftUI
+import SwiftData
 
 @Model
 final class Habit {
     // MARK: - Properties
-    var name: String
-    var iconName: String
-    var cretedAt: Date
-    var completedDates: [Date]
+    var name: String = ""
+    var iconName: String = "star.fill"
+    var tintColorHex: String = "5E5cE6"
+    var cretedAt: Date = Date.now
+    var completedDates: [Date] = []
     
     // MARK: - Init
-    init(name: String, iconName: String = "star.fill", createdAt: Date = .now) {
+    init(name: String, iconName: String = "star.fill", tintColorHex: String = "5E5CE6", createdAt: Date = .now) {
         self.name = name
         self.iconName = iconName
+        self.tintColorHex = tintColorHex
         self.cretedAt = createdAt
         self.completedDates = []
     }
@@ -69,5 +72,12 @@ extension Habit {
         } else {
             completedDates.append(.now)
         }
+    }
+    
+    var weeklyCompletionCount: Int {
+        var calendar =  Calendar(identifier: .gregorian)
+        calendar.firstWeekday = 2
+        guard let weekInterval = calendar.dateInterval(of: .weekOfYear, for: .now) else { return 0 }
+        return completedDates.filter { weekInterval.contains($0) }.count
     }
 }

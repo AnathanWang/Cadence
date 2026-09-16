@@ -26,7 +26,7 @@ enum AppTheme{
         static let coral = Color(hex: "FF8B66")
         
         static let habitAccent = Color(hex: "FF9F43")
-        static let cubAccent = Color(hex: "8B5CF6")
+        static let subAccent = Color(hex: "8B5CF6")
         static let financeAccent = Color(hex: "34C759")
         
         //Adaptive
@@ -38,7 +38,7 @@ enum AppTheme{
 extension Color {
     init(light: String, dark: String){
         self.init(uiColor: UIColor{
-            traits in traits.userInterfaceStyle == .dark ? UIColor(hex: dark) : UIColor(hex: light)
+            traits in traits.userInterfaceStyle == .dark ? UIColor(Color(hex: dark)) : UIColor(Color(hex: light))
         })
     }
 }

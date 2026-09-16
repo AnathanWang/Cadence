@@ -7,7 +7,7 @@
 import SwiftUI
 
 struct HabitRow: View {
-    let Habit: Habit
+    let habit: Habit
     
     var body: some View {
         HStack {
@@ -28,9 +28,9 @@ struct HabitRow: View {
             Button{
                 habit.toggleToday()
             } label: {
-                Image(systemName: habit.isDoneToday ? "checkmark.circle.fill" : "circle")
+                Image(systemName: habit.isCompletedToday ? "checkmark.circle.fill" : "circle")
                     .font(.title2)
-                    .foregroundStyle(habit.isCompletedToday : AppTheme.Colors.habitAccent : .secondary)
+                    .foregroundStyle(habit.isCompletedToday ? AppTheme.Colors.habitAccent : .secondary)
             }
             .buttonStyle(.plain)
         }
