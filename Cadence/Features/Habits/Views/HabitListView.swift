@@ -12,19 +12,35 @@ struct HabitListView: View {
     @Query(sort: \Habit.cretedAt, order: .reverse) private var habits: [Habit]
     
     @State private var isPresentedAddSheet: Bool = false
+    @State private var habitToEdit: Habit?
+    
+    private let columns = [GridItem(.flexible(), spacing: 12), GridItem(.flexible(), spacing: 12)]
     
     var body: some View {
         NavigationStack {
-            ScrollView {
-                LazyVStack(spacing: AppTheme.Layout.spacing){
-                    ForEach (habits) { habit in
-                        HabitRow(habit: habit)
+            ScrollView{
+                LazyVGrid(columns: columns, spacing: 12) {
+                    ForEach(habits) { habit in
+                        HabitCard(habit: habit)
+                            .contextMenu {
+                                Button {
+                                    habitToEdit = habit
+                                } label: {
+                                    Label("Изменить", systemImage: "pencil")
+                                }
+                                Button (role: .destructive) {
+                                    withAnimation() {modelContext.delete(habit)}
+                                } label: {
+                                    Label("Удалить", systemImage: "trash")
+                                }
+                            }
                     }
                 }
-                .padding()
+                .padding(16)
             }
             .background(AppTheme.Colors.background)
-            .navigationTitle("Привычки")
+            .navigationTitle(Text("Привычки"))
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
@@ -32,19 +48,19 @@ struct HabitListView: View {
                     } label: {
                         Image(systemName: "plus")
                     }
-                    .glassEffect(.regular.interactive(), in: Circle())
+                    .buttonStyle(.glassProminent)
+                    .buttonBorderShape(.circle)
                 }
             }
             .sheet(isPresented: $isPresentedAddSheet) {
-                AddHabitSheet()
+                HabitFormSheet(habit: nil)
+            }
+            .sheet(item: $habitToEdit) {
+                habit in HabitFormSheet(habit: habit)
             }
             .overlay {
                 if habits.isEmpty {
-                    ContentUnavailableView(
-                        "Пока нет привычек",
-                        systemImage: "star",
-                        description: Text("Нажми +, чтобы добавить первую")
-                    )
+                    ContentUnavailableView("Пока нет привычек", systemImage: "star", description: Text("Нажмите на  + чтобы добавить первую"))
                 }
             }
         }
