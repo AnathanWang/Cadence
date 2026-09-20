@@ -16,27 +16,15 @@ struct ContentView: View {
             }
             
             Tab("Подписки", systemImage: "creditcard.fill"){
-                PlaceholderView(
-                    title: "Подписки",
-                    icon: "creditcard.fill",
-                    tint: AppTheme.Colors.subAccent
-                )
+                SubscriptionListView()
             }
             
             Tab("Финансы", systemImage: "chart.line.uptrend.xyaxis"){
-                PlaceholderView(
-                    title: "Финансы",
-                    icon: "chart.line.uptrend.xyaxis",
-                    tint: AppTheme.Colors.financeAccent
-                )
+                FinanceView()
             }
             
             Tab("Дашборд", systemImage: "square.grid.2x2.fill"){
-                PlaceholderView(
-                    title: "Дашборд",
-                    icon: "square.grid.2x2.fill",
-                    tint: AppTheme.Colors.indigo
-                )
+                DashboardView()
             }
         }
     }

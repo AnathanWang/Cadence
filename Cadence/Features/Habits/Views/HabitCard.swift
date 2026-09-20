@@ -49,11 +49,13 @@ struct HabitCard: View {
                     Image(systemName: "checkmark")
                         .font(.subheadline.bold())
                         .frame(width: 28, height: 28)
+                        .scaleEffect(habit.isCompletedToday ? 1.05 : 0.9)
                         .opacity(habit.isCompletedToday ? 1 : 0.35)
                 }
                 .buttonStyle(.glassProminent)
                 .buttonBorderShape(.circle)
                 .tint(habit.tintColor)
+                .sensoryFeedback(.impact(weight: .medium), trigger: habit.isCompletedToday)
             }
             
             // Средняя строка: Иконка название и 0/7
@@ -102,7 +104,7 @@ struct HabitCard: View {
     }
     
     private func toggleHabit() {
-        withAnimation(.spring(response: 3.0, dampingFraction: 0.7)) {
+        withAnimation(.spring(response: 0.35, dampingFraction: 0.65)) {
             habit.toggleToday()
         }
     }

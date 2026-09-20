@@ -10,10 +10,25 @@ import SwiftData
 
 @main
 struct CadenceApp: App {
+    var sharedModelContainer: ModelContainer = {
+        let schema = Schema([
+            Habit.self,
+            Subscription.self,
+            Transaction.self,
+        ])
+        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: false)
+        
+        do {
+            return try ModelContainer(for: schema, configurations: [modelConfiguration])
+        } catch {
+            fatalError("Could not create ModelContainer: \(error)")
+        }
+    }()
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
         }
-        .modelContainer(for: Habit.self)
+        .modelContainer(sharedModelContainer)
     }
 }

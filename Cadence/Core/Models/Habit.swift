@@ -30,28 +30,31 @@ final class Habit {
 
 //MARK: - Streak logic
 extension Habit {
+    private var calendar: Calendar {
+        var cal =  Calendar(identifier: .gregorian)
+        cal.firstWeekday = 2
+        return cal
+    }
+    
     var currentStreak: Int {
-        let calendar = Calendar.current
-        let sortedDates = completedDates
-            .map { calendar.startOfDay(for: $0) }
+        let sortedUniqueDays = Set(completedDates.map { calendar.startOfDay(for: $0) })
             .sorted(by: >)
-        guard let mostRecent = sortedDates.first else { return 0 }
+        guard let mostRecent = sortedUniqueDays.first else { return 0 }
         
         let today = calendar.startOfDay(for: .now)
         let daysSinceLastCompletion = calendar.dateComponents([.day], from: mostRecent, to: today).day ?? 0
         
+        // стрик не сгорел если отметили сегодня или вчера
         guard daysSinceLastCompletion <= 1 else { return 0 }
         
         var streak = 1
         var previousDate = mostRecent
         
-        for date in sortedDates {
-            let gap = calendar.dateComponents([.day], from: previousDate, to: date).day ?? 0
+        for date in sortedUniqueDays.dropFirst() {
+            let gap = calendar.dateComponents([.day], from: date, to: previousDate).day ?? 0
             if gap == 1 {
                 streak += 1
                 previousDate = date
-            } else if gap == 0 {
-                continue
             } else {
                 break
             }
@@ -61,23 +64,33 @@ extension Habit {
     }
     
     var isCompletedToday: Bool {
-        let calendar = Calendar.current
-        return completedDates.contains(where: { calendar.isDateInToday($0) })
+        isCompleted(on: .now)
+    }
+    
+    func isCompleted(on date: Date) -> Bool {
+        let target = calendar.startOfDay(for: date)
+        return completedDates.contains { calendar.isDate($0, inSameDayAs: target) }
     }
     
     func toggleToday() {
-        let calendar = Calendar.current
-        if let index = completedDates.firstIndex(of: calendar.startOfDay(for: .now)) {
-            completedDates.remove(at: index)
-        } else {
-            completedDates.append(.now)
-        }
+        toggle(date: .now)
     }
     
     var weeklyCompletionCount: Int {
-        var calendar =  Calendar(identifier: .gregorian)
-        calendar.firstWeekday = 2
         guard let weekInterval = calendar.dateInterval(of: .weekOfYear, for: .now) else { return 0 }
-        return completedDates.filter { weekInterval.contains($0) }.count
+        let datesThisWeek = completedDates.filter { weekInterval.contains($0)}
+        //считаем только уникальные дни
+        let uniqueDays = Set(datesThisWeek.map { calendar.startOfDay(for: $0) })
+        return uniqueDays.count
+    }
+    
+    func toggle(date: Date) {
+        let targetDay =  calendar.startOfDay(for: date)
+        if isCompleted(on: targetDay) {
+            //удаляем все записи за этот день(очищая возможные дубликаты)
+            completedDates.removeAll { calendar.isDate($0, inSameDayAs: targetDay) }
+        } else {
+            completedDates.append(targetDay)
+        }
     }
 }
